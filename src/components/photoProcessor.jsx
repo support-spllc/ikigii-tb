@@ -3,18 +3,19 @@ import React, { useRef, useState } from 'react';
 const PhotoProcessor = () => {
     const canvasRef = useRef(null);
     const [loading, setLoading] = useState(false);
+    const [logoColor, setLogoColor] = useState('blue'); // New state for logo color
     const [formData, setFormData] = useState({
-      nombre: '',
-      apellido: '',
-      email: '',
-      imagen: null,
+        nombre: '',
+        apellido: '',
+        email: '',
+        imagen: null,
     });
-  
+
     const handleInputChange = (e) => {
-      setFormData({
-        ...formData,
-        [e.target.name]: e.target.value,
-      });
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
     };
 
     const processImage = async (file) => {
@@ -31,6 +32,21 @@ const PhotoProcessor = () => {
 
                 const logo = new Image();
                 logo.crossOrigin = "anonymous"; // Ensure cross-origin access
+
+                // Select logo based on chosen color
+                switch (logoColor) {
+                    case 'negro':
+                        logo.src = `${window.location.origin}/Logo-negro.png`;
+                        break;
+                    case 'blanco':
+                        logo.src = `${window.location.origin}/Logo-blanco.png`;
+                        break;
+                    case 'azul':
+                    default:
+                        logo.src = `${window.location.origin}/Logo-azul.png`;
+                        break;
+                }
+
                 logo.onload = () => {
                     console.log("Logo loaded successfully.");
                     const logoWidth = mainImage.width * 0.2;
@@ -49,8 +65,6 @@ const PhotoProcessor = () => {
                     console.error("Error loading logo image:", err);
                     reject("Error loading logo image.");
                 };
-
-                logo.src = `${window.location.origin}/Logo-mostrador-100x40cm.png`;
             };
 
             mainImage.onerror = (err) => {
@@ -74,11 +88,11 @@ const PhotoProcessor = () => {
             alert('Please select an image');
             return;
         }
-        
+
         setLoading(true);
         try {
             const processedImage = await processImage(formData.imagen);
-            
+
             const filename = `${formData.nombre}_${formData.apellido}_${formData.email}.jpg`
                 .toLowerCase()
                 .replace(/\s+/g, '_')
@@ -88,7 +102,7 @@ const PhotoProcessor = () => {
             link.href = processedImage;
             link.download = filename;
             link.click();
-            
+
             setFormData({
                 nombre: '',
                 apellido: '',
@@ -96,7 +110,7 @@ const PhotoProcessor = () => {
                 imagen: null,
             });
             e.target.reset();
-            
+
         } catch (error) {
             console.error('Processing error:', error);
             alert('There was an error processing your image. Please try again.');
@@ -119,7 +133,7 @@ const PhotoProcessor = () => {
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
-                
+
                 <div>
                     <label htmlFor="apellido" className="block text-sm font-medium text-gray-600">Apellido</label>
                     <input
@@ -131,7 +145,7 @@ const PhotoProcessor = () => {
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
-                
+
                 <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-600">Email</label>
                     <input
@@ -144,7 +158,21 @@ const PhotoProcessor = () => {
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
-                
+
+                <div>
+                    <label htmlFor="logoColor" className="block text-sm font-medium text-gray-600">Logo Color</label>
+                    <select
+                        id="logoColor"
+                        value={logoColor}
+                        onChange={(e) => setLogoColor(e.target.value)}
+                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="azul">Blue</option>
+                        <option value="negro">Black</option>
+                        <option value="blanco">White</option>
+                    </select>
+                </div>
+
                 <div>
                     <label htmlFor="imagen" className="block text-sm font-medium text-gray-600">Upload Photo</label>
                     <input
